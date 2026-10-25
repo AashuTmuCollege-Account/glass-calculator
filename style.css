@@ -1,0 +1,217 @@
+:root {
+  --glass: rgba(255, 255, 255, 0.09);
+  --edge: rgba(255, 255, 255, 0.24);
+  --ink: rgba(255, 255, 255, 0.94);
+  --ink-soft: rgba(255, 255, 255, 0.62);
+  --amber: #ff9a3c;
+  --radius: 30px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  font-family: -apple-system, "SF Pro Display", "Segoe UI Variable Display", "Segoe UI", Roboto, system-ui, sans-serif;
+  color: var(--ink);
+  /* a light pool behind the slab, so the glass has something bright to refract */
+  background: radial-gradient(60% 45% at 62% 14%, rgba(255, 255, 255, 0.13), transparent 70%), #05060c;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* colour fields the glass actually has something to refract */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 68vmax;
+  height: 68vmax;
+  border-radius: 50%;
+  filter: blur(72px);
+  opacity: 0.75;
+  pointer-events: none;
+  animation: drift 26s ease-in-out infinite alternate;
+}
+
+body::before {
+  top: -26vmax;
+  left: -20vmax;
+  background: radial-gradient(circle at 30% 30%, #5b57ff, transparent 62%),
+              radial-gradient(circle at 70% 60%, #ff4d94, transparent 60%);
+}
+
+body::after {
+  right: -24vmax;
+  bottom: -30vmax;
+  background: radial-gradient(circle at 60% 40%, #17d4c4, transparent 62%),
+              radial-gradient(circle at 30% 70%, #ffb45c, transparent 58%);
+  animation-delay: -13s;
+}
+
+@keyframes drift {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to   { transform: translate3d(4%, 3%, 0) scale(1.12); }
+}
+
+.calc {
+  position: relative;
+  width: min(24rem, 100%);
+  padding: 1.25rem;
+  border-radius: 44px;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.19), rgba(255, 255, 255, 0.03) 46%, rgba(255, 255, 255, 0.13));
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 40px rgba(255, 255, 255, 0.06),
+    /* stacked offsets fake a side wall that only paints outside the border box */
+    5px 6px 0 -1px rgba(24, 30, 56, 0.55),
+    9px 11px 0 -1px rgba(255, 255, 255, 0.22),
+    12px 15px 0 -1px rgba(12, 16, 34, 0.5),
+    0 2px 4px rgba(6, 8, 20, 0.35),
+    0 44px 80px -28px rgba(4, 6, 18, 0.85),
+    0 0 90px -20px rgba(120, 130, 255, 0.35);
+}
+
+/* top gloss, kept sharp so it reads as a specular highlight */
+.calc::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 44px;
+  background:
+    radial-gradient(120% 70% at 18% 0%, rgba(255, 255, 255, 0.34), transparent 55%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16), transparent 12%, transparent 88%, rgba(255, 255, 255, 0.14));
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.screen {
+  padding: 1.15rem 1rem 1.35rem;
+  text-align: right;
+  min-height: 7rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  overflow: hidden;
+}
+
+.expr {
+  margin: 0;
+  min-height: 1.25rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  display: flex;
+  justify-content: flex-end; /* a long expression clips at its head, newest tokens stay visible */
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.expr bdi { min-width: 0; }
+
+.result {
+  font-size: 3.5rem;
+  font-weight: 250;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.pad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.7rem;
+  border-radius: var(--radius);
+  overflow: hidden; /* clips the keypad onto the slab's inner lens */
+}
+
+.key {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  font: inherit;
+  font-size: 1.45rem;
+  font-weight: 400;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -8px 14px -10px rgba(255, 255, 255, 0.5),
+    0 8px 18px -10px rgba(3, 5, 15, 0.8);
+  backdrop-filter: blur(8px) saturate(150%);
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+  transition: transform 0.12s ease, background 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key:hover { background: linear-gradient(160deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.12)); }
+
+.key:active,
+.key.hit {
+  transform: scale(0.94);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.16));
+  box-shadow: inset 0 2px 8px rgba(20, 24, 40, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.key:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 2px;
+}
+
+.key.fn {
+  font-size: 1.15rem;
+  color: var(--ink-soft);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.03));
+}
+
+.key.fn:hover { color: var(--ink); }
+
+.key.op {
+  font-size: 1.6rem;
+  background: linear-gradient(160deg, rgba(255, 190, 120, 0.42), rgba(255, 125, 60, 0.22));
+  border-color: rgba(255, 205, 160, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 220, 0.7),
+    inset 0 -10px 16px -12px rgba(255, 170, 90, 0.8),
+    0 8px 20px -10px rgba(255, 130, 50, 0.6);
+}
+
+.key.eq {
+  color: #fff;
+  background: linear-gradient(160deg, #ffc46b 0%, #ff9433 45%, #f4711f 100%);
+  border-color: rgba(255, 220, 180, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -12px 18px -12px rgba(120, 40, 0, 0.7),
+    0 10px 26px -10px rgba(255, 130, 40, 0.85),
+    0 0 40px -12px rgba(255, 150, 60, 0.7);
+  font-size: 1.7rem;
+}
+
+@media (max-width: 380px) {
+  .calc { padding: 1rem; border-radius: 36px; }
+  .calc::before, .calc::after { border-radius: 36px; }
+  .pad { gap: 0.55rem; }
+  .key { border-radius: 22px; font-size: 1.3rem; }
+  .result { font-size: 2.9rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before, body::after { animation: none; }
+  .key { transition: none; }
+}
